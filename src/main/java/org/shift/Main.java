@@ -1,3 +1,5 @@
+package org.shift;
+
 import picocli.CommandLine;
 
 import java.nio.file.Path;
