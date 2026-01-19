@@ -60,7 +60,11 @@ public class CommandLineArguments implements Runnable {
             );
         }
 
-        statisticsType = isFullStatistic ? StatisticsType.FULL : StatisticsType.BRIEF;
+        if (isBriefStatistic) {
+            statisticsType = StatisticsType.BRIEF;
+        } else if (isFullStatistic) {
+            statisticsType = StatisticsType.FULL;
+        }
 
         inputFileNames.removeIf(path -> {
             if (!path.toFile().exists()) {

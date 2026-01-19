@@ -10,6 +10,8 @@ import java.util.Map;
 public class OutputManager {
     private final Path outputDirectoryName;
 
+    private final StatisticsType statisticsType;
+
     private final String outputFileNamePrefix;
 
     private final boolean isAppendToExistingFiles;
@@ -18,8 +20,11 @@ public class OutputManager {
 
     private final EnumSet<DataType> disabledTypes = EnumSet.noneOf(DataType.class);
 
+    private final Map<DataType, StatisticsCollector> statistics = new EnumMap<>(DataType.class);
+
     public OutputManager(CommandLineArguments commandLineArguments) {
         this.isAppendToExistingFiles = commandLineArguments.getIsAppendToExistingFiles();
+        this.statisticsType = commandLineArguments.getStatisticsType();
         this.outputDirectoryName = commandLineArguments.getOutputDirectoryName() == null ? Paths.get(".") : commandLineArguments.getOutputDirectoryName();
         this.outputFileNamePrefix = commandLineArguments.getOutputFileNamePrefix();
     }
@@ -75,6 +80,18 @@ public class OutputManager {
 
             writer.write(line);
             writer.newLine();
+
+            if (statisticsType != null) {
+                StatisticsCollector collector = statistics.computeIfAbsent(dataType, dt -> {
+                    return switch (dt) {
+                        case INTEGER -> new IntegerStatisticCollector(statisticsType);
+                        case FLOAT -> new FloatStatisticCollector(statisticsType);
+                        case STRING -> new StringStatisticCollector(statisticsType);
+                    };
+                });
+
+                collector.addValue(line);
+            }
         } catch (IOException e) {
             System.err.printf(
                     "Failed to write %s data to file (%s). This data type will be skipped.%n",
@@ -83,6 +100,23 @@ public class OutputManager {
 
             closeWriterByError(dataType);
             disabledTypes.add(dataType);
+
+            if (disabledTypes.size() == DataType.values().length) {
+                System.err.println("No output files available.");
+                System.exit(1);
+            }
+        }
+    }
+
+    public void printStatistics() {
+        System.out.println("=== Statistics ===");
+        for (DataType dt : DataType.values()) {
+            StatisticsCollector collector = statistics.get(dt);
+            if (collector != null) {
+                System.out.printf("%s: %s%n", dt, collector.getStatistics());
+            } else {
+                System.out.printf("%s: no data%n", dt);
+            }
         }
     }
 

@@ -10,17 +10,17 @@ public class FilesFilter {
 
     private final DataFilter dataFilter;
 
-    private final StatisticsType statisticsType;
-
     private final OutputManager outputManager;
 
     private final List<Path> inputFileNames;
 
+    private final boolean isStatisticNeededToPrint;
+
     public FilesFilter(OutputManager outputManager, CommandLineArguments commandLineArguments) {
         this.outputManager = outputManager;
-        this.statisticsType = commandLineArguments.getStatisticsType();
         this.inputFileNames = commandLineArguments.getInputFileNames();
         this.dataFilter = new DataFilter();
+        this.isStatisticNeededToPrint = commandLineArguments.getStatisticsType() != null;
     }
 
     public void filterFilesData() {
@@ -39,5 +39,9 @@ public class FilesFilter {
         }
 
         outputManager.closeAllFiles();
+
+        if (isStatisticNeededToPrint) {
+            outputManager.printStatistics();
+        }
     }
 }
