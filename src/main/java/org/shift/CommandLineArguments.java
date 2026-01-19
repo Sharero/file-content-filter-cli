@@ -16,40 +16,40 @@ public class CommandLineArguments implements Runnable {
             names = "-o",
             description = "Set specific output directory name"
     )
-    Path outputDirectoryName;
+    private Path outputDirectoryName;
 
     @CommandLine.Option(
             names = "-p",
             description = "Set specific output file name prefix"
     )
-    String outputFileNamePrefix = "";
+    private String outputFileNamePrefix = "";
 
     @CommandLine.Option(
             names = "-a",
             description = "New data will be added to existing files"
     )
-    boolean isAppendToExistingFiles;
+    private boolean isAppendToExistingFiles;
 
     @CommandLine.Option(
             names = "-s",
             description = "Output brief statistic about util work results"
     )
-    boolean isBriefStatistic;
+    private boolean isBriefStatistic;
 
     @CommandLine.Option(
             names = "-f",
             description = "Output full statistic about util work results"
     )
-    boolean isFullStatistic;
+    private boolean isFullStatistic;
 
     @CommandLine.Parameters(
             arity = "1..*",
             paramLabel = "FILES",
             description = "Input files"
     )
-    List<Path> inputFileNames;
+    private List<Path> inputFileNames;
 
-    StatisticsType statisticsType;
+    private StatisticsType statisticsType;
 
     @Override
     public void run() {
@@ -58,5 +58,25 @@ public class CommandLineArguments implements Runnable {
         } else {
             statisticsType = StatisticsType.BRIEF;
         }
+    }
+
+    public StatisticsType getStatisticsType() {
+        return statisticsType;
+    }
+
+    public List<Path> getInputFileNames() {
+        return inputFileNames;
+    }
+
+    public Path getOutputDirectoryName() {
+        return outputDirectoryName;
+    }
+
+    public String getOutputFileNamePrefix() {
+        return outputFileNamePrefix;
+    }
+
+    public boolean getIsAppendToExistingFiles() {
+        return isAppendToExistingFiles;
     }
 }
