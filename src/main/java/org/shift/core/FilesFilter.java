@@ -1,4 +1,6 @@
-package org.shift;
+package org.shift.core;
+
+import org.shift.cli.CommandLineArguments;
 
 import java.io.BufferedReader;
 import java.io.IOException;

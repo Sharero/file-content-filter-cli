@@ -1,5 +1,6 @@
-package org.shift;
+package org.shift.cli;
 
+import org.shift.stats.StatisticsType;
 import picocli.CommandLine;
 
 import java.nio.file.Path;
@@ -34,7 +35,7 @@ public class CommandLineArguments implements Runnable {
             names = "-s",
             description = "Output brief statistic about util work results"
     )
-    private boolean isBriefStatistic;
+    private boolean isShortStatistic;
 
     @CommandLine.Option(
             names = "-f",
@@ -53,22 +54,25 @@ public class CommandLineArguments implements Runnable {
 
     @Override
     public void run() {
-        if (isBriefStatistic && isFullStatistic) {
+        if (isShortStatistic && isFullStatistic) {
             throw new CommandLine.ParameterException(
                     new CommandLine(this),
                     "Options -s and -f cannot be used together"
             );
         }
 
-        if (isBriefStatistic) {
-            statisticsType = StatisticsType.BRIEF;
+        if (isShortStatistic) {
+            statisticsType = StatisticsType.SHORT;
         } else if (isFullStatistic) {
             statisticsType = StatisticsType.FULL;
         }
 
         inputFileNames.removeIf(path -> {
             if (!path.toFile().exists()) {
-                System.err.println("Input file does not exist: " + path);
+                System.err.printf(
+                        "Input file does not exist: %s%n",
+                        path
+                );
                 return true;
             }
             return false;

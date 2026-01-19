@@ -1,4 +1,4 @@
-package org.shift;
+package org.shift.stats;
 
 public class StringStatisticCollector implements StatisticsCollector {
 
@@ -26,7 +26,7 @@ public class StringStatisticCollector implements StatisticsCollector {
 
     @Override
     public String getStatistics() {
-        if (statisticsType == StatisticsType.BRIEF) {
+        if (statisticsType == StatisticsType.SHORT) {
             return "Count: " + elementsCount;
         } else {
             StringBuilder sb = new StringBuilder();

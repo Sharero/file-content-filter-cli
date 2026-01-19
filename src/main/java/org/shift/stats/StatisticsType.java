@@ -1,6 +1,6 @@
-package org.shift;
+package org.shift.stats;
 
 public enum StatisticsType {
     FULL,
-    BRIEF
+    SHORT
 }

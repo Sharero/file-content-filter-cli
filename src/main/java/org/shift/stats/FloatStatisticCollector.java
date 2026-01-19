@@ -1,4 +1,4 @@
-package org.shift;
+package org.shift.stats;
 
 public class FloatStatisticCollector implements StatisticsCollector {
 
@@ -27,24 +27,28 @@ public class FloatStatisticCollector implements StatisticsCollector {
                 elementsSum += num;
             }
         } catch (NumberFormatException e) {
-            System.err.println("Skipping invalid float value: " + value);
+            System.err.printf(
+                    "Skipping invalid float value: '%s'%n",
+                    value
+            );
         }
     }
 
     @Override
     public String getStatistics() {
-        if (statisticsType == StatisticsType.BRIEF) {
+        if (statisticsType == StatisticsType.SHORT) {
             return "Count: " + elementsCount;
-        } else {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Count: ").append(elementsCount);
-            if (elementsCount > 0) {
-                sb.append(", Min: ").append(minElement);
-                sb.append(", Max: ").append(maxElement);
-                sb.append(", Sum: ").append(elementsSum);
-                sb.append(", Avg: ").append(elementsSum / elementsCount);
-            }
-            return sb.toString();
         }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Count: ").append(elementsCount);
+        if (elementsCount > 0) {
+            sb.append(", Min: ").append(minElement);
+            sb.append(", Max: ").append(maxElement);
+            sb.append(", Sum: ").append(elementsSum);
+            sb.append(", Avg: ").append(elementsSum / elementsCount);
+        }
+
+        return sb.toString();
     }
 }

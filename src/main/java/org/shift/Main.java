@@ -1,5 +1,8 @@
 package org.shift;
 
+import org.shift.cli.CommandLineArguments;
+import org.shift.core.FilesFilter;
+import org.shift.core.OutputManager;
 import picocli.CommandLine;
 
 public class Main {

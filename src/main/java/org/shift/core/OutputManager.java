@@ -1,4 +1,7 @@
-package org.shift;
+package org.shift.core;
+
+import org.shift.cli.CommandLineArguments;
+import org.shift.stats.*;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -25,7 +28,8 @@ public class OutputManager {
     public OutputManager(CommandLineArguments commandLineArguments) {
         this.isAppendToExistingFiles = commandLineArguments.getIsAppendToExistingFiles();
         this.statisticsType = commandLineArguments.getStatisticsType();
-        this.outputDirectoryName = commandLineArguments.getOutputDirectoryName() == null ? Paths.get(".") : commandLineArguments.getOutputDirectoryName();
+        this.outputDirectoryName = commandLineArguments.getOutputDirectoryName() == null ?
+                Paths.get(".") : commandLineArguments.getOutputDirectoryName();
         this.outputFileNamePrefix = commandLineArguments.getOutputFileNamePrefix();
     }
 
@@ -49,8 +53,10 @@ public class OutputManager {
         Path path = outputDirectoryName.resolve(getFileNameForDataType(dataType));
 
         OpenOption[] fileMode = isAppendToExistingFiles
-                ? new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.APPEND}
-                : new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING};
+                ? new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.WRITE,
+                StandardOpenOption.APPEND}
+                : new OpenOption[]{StandardOpenOption.CREATE, StandardOpenOption.WRITE,
+                StandardOpenOption.TRUNCATE_EXISTING};
 
         return Files.newBufferedWriter(path, java.nio.charset.StandardCharsets.UTF_8, fileMode);
     }
@@ -60,7 +66,11 @@ public class OutputManager {
         if (writer != null) {
             try {
                 writer.close();
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                System.err.printf(
+                        "Failed to close writer for %s: %s%n",
+                        dataType, e.getMessage()
+                );
             }
         }
     }
@@ -102,7 +112,7 @@ public class OutputManager {
             disabledTypes.add(dataType);
 
             if (disabledTypes.size() == DataType.values().length) {
-                System.err.println("No output files available.");
+                System.err.println("No output files available");
                 System.exit(1);
             }
         }
@@ -128,5 +138,6 @@ public class OutputManager {
                 System.err.printf("Error while closing file: %s%n", e.getMessage());
             }
         }
+        writers.clear();
     }
 }
