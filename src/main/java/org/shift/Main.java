@@ -14,6 +14,10 @@ public class Main {
         commandLine.parseArgs(args);
         commandLineArguments.run();
 
-        OutputManager outputManager = new OutputManager(commandLineArguments.getOutputDirectoryName(), commandLineArguments.getOutputFileNamePrefix(), commandLineArguments.getIsAppendToExistingFiles());
+        OutputManager outputManager = new OutputManager(commandLineArguments);
+
+        FilesFilter filesFilter = new FilesFilter(outputManager, commandLineArguments);
+
+        filesFilter.filterFilesData();
     }
 }

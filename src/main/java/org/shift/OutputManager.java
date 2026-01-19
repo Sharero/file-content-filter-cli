@@ -2,10 +2,7 @@ package org.shift;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -18,10 +15,10 @@ public class OutputManager {
 
     private final Map<DataType, BufferedWriter> writers = new EnumMap<>(DataType.class);
 
-    public OutputManager(Path outputDirectoryName, String outputFileNamePrefix, boolean isAppendToExistingFiles) {
-        this.isAppendToExistingFiles = isAppendToExistingFiles;
-        this.outputDirectoryName = outputDirectoryName;
-        this.outputFileNamePrefix = outputFileNamePrefix;
+    public OutputManager(CommandLineArguments commandLineArguments) {
+        this.isAppendToExistingFiles = commandLineArguments.getIsAppendToExistingFiles();
+        this.outputDirectoryName = commandLineArguments.getOutputDirectoryName() == null ? Paths.get(".") : commandLineArguments.getOutputDirectoryName();
+        this.outputFileNamePrefix =  commandLineArguments.getOutputFileNamePrefix();
     }
 
     private String getFileNameForDataType(DataType dataType) {
