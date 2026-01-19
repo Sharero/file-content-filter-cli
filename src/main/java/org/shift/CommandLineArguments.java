@@ -49,14 +49,32 @@ public class CommandLineArguments implements Runnable {
     )
     private List<Path> inputFileNames;
 
-    private StatisticsType statisticsType;
+    private StatisticsType statisticsType = null;
 
     @Override
     public void run() {
-        if (isFullStatistic) {
-            statisticsType = StatisticsType.FULL;
-        } else {
-            statisticsType = StatisticsType.BRIEF;
+        if (isBriefStatistic && isFullStatistic) {
+            throw new CommandLine.ParameterException(
+                    new CommandLine(this),
+                    "Options -s and -f cannot be used together"
+            );
+        }
+
+        statisticsType = isFullStatistic ? StatisticsType.FULL : StatisticsType.BRIEF;
+
+        inputFileNames.removeIf(path -> {
+            if (!path.toFile().exists()) {
+                System.err.println("Input file does not exist: " + path);
+                return true;
+            }
+            return false;
+        });
+
+        if (inputFileNames.isEmpty()) {
+            throw new CommandLine.ParameterException(
+                    new CommandLine(this),
+                    "No valid input files provided"
+            );
         }
     }
 

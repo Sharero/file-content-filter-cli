@@ -2,8 +2,6 @@ package org.shift;
 
 import picocli.CommandLine;
 
-import java.nio.file.Path;
-
 public class Main {
 
     public static void main(String[] args) {
@@ -15,7 +13,6 @@ public class Main {
         commandLineArguments.run();
 
         OutputManager outputManager = new OutputManager(commandLineArguments);
-
         FilesFilter filesFilter = new FilesFilter(outputManager, commandLineArguments);
 
         filesFilter.filterFilesData();

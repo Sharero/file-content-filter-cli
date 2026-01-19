@@ -8,13 +8,13 @@ import java.util.List;
 
 public class FilesFilter {
 
-    private DataFilter dataFilter;
+    private final DataFilter dataFilter;
 
-    private StatisticsType statisticsType;
+    private final StatisticsType statisticsType;
 
-    private OutputManager outputManager;
+    private final OutputManager outputManager;
 
-    private List<Path> inputFileNames;
+    private final List<Path> inputFileNames;
 
     public FilesFilter(OutputManager outputManager, CommandLineArguments commandLineArguments) {
         this.outputManager = outputManager;
@@ -28,38 +28,16 @@ public class FilesFilter {
             try (BufferedReader reader = Files.newBufferedReader(filePath)) {
                 String row;
                 while ((row = reader.readLine()) != null) {
-                    String trimmed_row = row.trim();
+                    String trimmedRow = row.trim();
+                    DataType dataType = dataFilter.defineFileStringDataType(trimmedRow);
 
-                    DataType dataType = dataFilter.defineFileStringDataType(trimmed_row);
-
-                    switch (dataType) {
-                        case INTEGER:
-                            try {
-                                outputManager.writeLine(dataType, row);
-                            } catch (IOException e) {
-                                System.out.printf("Failed to write integer line to output for line: " + row + " (" + e.getMessage() + ")");
-                            }
-                            break;
-                        case FLOAT:
-                            try {
-                                outputManager.writeLine(dataType, row);
-                            } catch (IOException e) {
-                                System.out.printf("Failed to write float line to output for line: " + row + " (" + e.getMessage() + ")");
-                            }
-                            break;
-                        case STRING:
-                            try {
-                                outputManager.writeLine(dataType, row);
-                            } catch (IOException e) {
-                                System.out.printf("Failed to write string line to output for line: " + row + " (" + e.getMessage() + ")");
-                            }
-                            break;
-                    }
+                    outputManager.writeLine(dataType, row);
                 }
             } catch (IOException e) {
-                System.out.printf("Error %s in file %s", e.getMessage(), filePath);
+                System.err.printf("Error reading file %s: %s%n", filePath, e.getMessage());
             }
         }
+
         outputManager.closeAllFiles();
     }
 }

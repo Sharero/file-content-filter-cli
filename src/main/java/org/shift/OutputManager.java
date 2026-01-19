@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.Map;
 
 public class OutputManager {
@@ -15,10 +16,12 @@ public class OutputManager {
 
     private final Map<DataType, BufferedWriter> writers = new EnumMap<>(DataType.class);
 
+    private final EnumSet<DataType> disabledTypes = EnumSet.noneOf(DataType.class);
+
     public OutputManager(CommandLineArguments commandLineArguments) {
         this.isAppendToExistingFiles = commandLineArguments.getIsAppendToExistingFiles();
         this.outputDirectoryName = commandLineArguments.getOutputDirectoryName() == null ? Paths.get(".") : commandLineArguments.getOutputDirectoryName();
-        this.outputFileNamePrefix =  commandLineArguments.getOutputFileNamePrefix();
+        this.outputFileNamePrefix = commandLineArguments.getOutputFileNamePrefix();
     }
 
     private String getFileNameForDataType(DataType dataType) {
@@ -30,7 +33,13 @@ public class OutputManager {
     }
 
     private BufferedWriter createWriter(DataType dataType) throws IOException {
-        Files.createDirectories(outputDirectoryName);
+        try {
+            Files.createDirectories(outputDirectoryName);
+        } catch (IOException e) {
+            throw new IOException(
+                    "Cannot create output directory: " + outputDirectoryName, e
+            );
+        }
 
         Path path = outputDirectoryName.resolve(getFileNameForDataType(dataType));
 
@@ -41,24 +50,47 @@ public class OutputManager {
         return Files.newBufferedWriter(path, java.nio.charset.StandardCharsets.UTF_8, fileMode);
     }
 
-    public void writeLine(DataType dataType, String line) throws IOException {
-        BufferedWriter writer = writers.get(dataType);
+    private void closeWriterByError(DataType dataType) {
+        BufferedWriter writer = writers.remove(dataType);
+        if (writer != null) {
+            try {
+                writer.close();
+            } catch (IOException ignored) {
+            }
+        }
+    }
 
-        if (writer == null) {
-            writer = createWriter(dataType);
-            writers.put(dataType, writer);
+    public void writeLine(DataType dataType, String line) throws IOException {
+        if (disabledTypes.contains(dataType)) {
+            return;
         }
 
-        writer.write(line);
-        writer.newLine();
+        try {
+            BufferedWriter writer = writers.get(dataType);
+
+            if (writer == null) {
+                writer = createWriter(dataType);
+                writers.put(dataType, writer);
+            }
+
+            writer.write(line);
+            writer.newLine();
+        } catch (IOException e) {
+            System.err.printf(
+                    "Failed to write %s data to file (%s). This data type will be skipped.%n",
+                    dataType, e.getMessage()
+            );
+
+            closeWriterByError(dataType);
+            disabledTypes.add(dataType);
+        }
     }
 
     public void closeAllFiles() {
         for (BufferedWriter writer : writers.values()) {
             try {
                 writer.close();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 System.err.printf("Error while closing file: %s%n", e.getMessage());
             }
         }
