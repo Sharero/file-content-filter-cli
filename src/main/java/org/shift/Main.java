@@ -1,6 +1,7 @@
 package org.shift;
 
 import org.shift.cli.CommandLineArguments;
+import org.shift.core.DataFilter;
 import org.shift.core.FilesFilter;
 import org.shift.core.OutputManager;
 import picocli.CommandLine;
@@ -16,7 +17,8 @@ public class Main {
         commandLineArguments.run();
 
         OutputManager outputManager = new OutputManager(commandLineArguments);
-        FilesFilter filesFilter = new FilesFilter(outputManager, commandLineArguments);
+        DataFilter dataFilter = new DataFilter();
+        FilesFilter filesFilter = new FilesFilter(outputManager, commandLineArguments, dataFilter);
 
         filesFilter.filterFilesData();
     }

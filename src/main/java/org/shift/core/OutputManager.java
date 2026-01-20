@@ -11,19 +11,19 @@ import java.util.EnumSet;
 import java.util.Map;
 
 public class OutputManager {
-    private final Path outputDirectoryName;
+    private Path outputDirectoryName;
 
-    private final StatisticsType statisticsType;
+    private StatisticsType statisticsType;
 
-    private final String outputFileNamePrefix;
+    private String outputFileNamePrefix;
 
-    private final boolean isAppendToExistingFiles;
+    private boolean isAppendToExistingFiles;
 
-    private final Map<DataType, BufferedWriter> writers = new EnumMap<>(DataType.class);
+    private Map<DataType, BufferedWriter> writers = new EnumMap<>(DataType.class);
 
-    private final EnumSet<DataType> disabledTypes = EnumSet.noneOf(DataType.class);
+    private EnumSet<DataType> disabledTypes = EnumSet.noneOf(DataType.class);
 
-    private final Map<DataType, StatisticsCollector> statistics = new EnumMap<>(DataType.class);
+    private Map<DataType, StatisticsCollector> statistics = new EnumMap<>(DataType.class);
 
     public OutputManager(CommandLineArguments commandLineArguments) {
         this.isAppendToExistingFiles = commandLineArguments.getIsAppendToExistingFiles();
@@ -32,6 +32,63 @@ public class OutputManager {
                 Paths.get(".") : commandLineArguments.getOutputDirectoryName();
         this.outputFileNamePrefix = commandLineArguments.getOutputFileNamePrefix();
     }
+
+    public Path getOutputDirectoryName() {
+        return outputDirectoryName;
+    }
+
+    public void setOutputDirectoryName(Path outputDirectoryName) {
+        this.outputDirectoryName = outputDirectoryName;
+    }
+
+    public StatisticsType getStatisticsType() {
+        return statisticsType;
+    }
+
+    public void setStatisticsType(StatisticsType statisticsType) {
+        this.statisticsType = statisticsType;
+    }
+
+    public String getOutputFileNamePrefix() {
+        return outputFileNamePrefix;
+    }
+
+    public void setOutputFileNamePrefix(String outputFileNamePrefix) {
+        this.outputFileNamePrefix = outputFileNamePrefix;
+    }
+
+    public boolean isAppendToExistingFiles() {
+        return isAppendToExistingFiles;
+    }
+
+    public void setAppendToExistingFiles(boolean appendToExistingFiles) {
+        this.isAppendToExistingFiles = appendToExistingFiles;
+    }
+
+    public Map<DataType, BufferedWriter> getWriters() {
+        return writers;
+    }
+
+    public void setWriters(Map<DataType, BufferedWriter> writers) {
+        this.writers = writers;
+    }
+
+    public EnumSet<DataType> getDisabledTypes() {
+        return disabledTypes;
+    }
+
+    public void setDisabledTypes(EnumSet<DataType> disabledTypes) {
+        this.disabledTypes = disabledTypes;
+    }
+
+    public Map<DataType, StatisticsCollector> getStatistics() {
+        return statistics;
+    }
+
+    public void setStatistics(Map<DataType, StatisticsCollector> statistics) {
+        this.statistics = statistics;
+    }
+
 
     private String getFileNameForDataType(DataType dataType) {
         return switch (dataType) {

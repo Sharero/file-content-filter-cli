@@ -90,19 +90,39 @@ public class CommandLineArguments implements Runnable {
         return statisticsType;
     }
 
+    public void setStatisticsType(StatisticsType statisticsType) {
+        this.statisticsType = statisticsType;
+    }
+
     public List<Path> getInputFileNames() {
         return inputFileNames;
+    }
+
+    public void setInputFileNames(List<Path> inputFileNames) {
+        this.inputFileNames = inputFileNames;
     }
 
     public Path getOutputDirectoryName() {
         return outputDirectoryName;
     }
 
+    public void setOutputDirectoryName(Path outputDirectoryName) {
+        this.outputDirectoryName = outputDirectoryName;
+    }
+
     public String getOutputFileNamePrefix() {
         return outputFileNamePrefix;
     }
 
+    public void setOutputFileNamePrefix(String outputFileNamePrefix) {
+        this.outputFileNamePrefix = outputFileNamePrefix;
+    }
+
     public boolean getIsAppendToExistingFiles() {
         return isAppendToExistingFiles;
+    }
+
+    public void setAppendToExistingFiles(boolean append) {
+        this.isAppendToExistingFiles = append;
     }
 }

@@ -18,11 +18,18 @@ public class FilesFilter {
 
     private final boolean isStatisticNeededToPrint;
 
-    public FilesFilter(OutputManager outputManager, CommandLineArguments commandLineArguments) {
+    public FilesFilter(OutputManager outputManager, CommandLineArguments commandLineArguments,
+                       DataFilter dataFilter) {
         this.outputManager = outputManager;
         this.inputFileNames = commandLineArguments.getInputFileNames();
-        this.dataFilter = new DataFilter();
         this.isStatisticNeededToPrint = commandLineArguments.getStatisticsType() != null;
+        this.dataFilter = dataFilter;
+    }
+
+    public void filterLine(String row) throws IOException {
+        String trimmedRow = row.trim();
+        DataType dataType = dataFilter.defineFileStringDataType(trimmedRow);
+        outputManager.writeLine(dataType, row);
     }
 
     public void filterFilesData() {
@@ -30,10 +37,7 @@ public class FilesFilter {
             try (BufferedReader reader = Files.newBufferedReader(filePath)) {
                 String row;
                 while ((row = reader.readLine()) != null) {
-                    String trimmedRow = row.trim();
-                    DataType dataType = dataFilter.defineFileStringDataType(trimmedRow);
-
-                    outputManager.writeLine(dataType, row);
+                    filterLine(row);
                 }
             } catch (IOException e) {
                 System.err.printf("Error reading file %s: %s%n", filePath, e.getMessage());
