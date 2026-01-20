@@ -33,7 +33,7 @@ public class CommandLineArguments implements Runnable {
 
     @CommandLine.Option(
             names = "-s",
-            description = "Output brief statistic about util work results"
+            description = "Output short statistic about util work results"
     )
     private boolean isShortStatistic;
 
